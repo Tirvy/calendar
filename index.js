@@ -1,33 +1,35 @@
 /**
  * Created by root on 17.01.17.
  */
+
 window.onload = function () {
 
-    var monthNamesArray = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July',
-        'August', 'September', 'October', 'November', 'December'];
-    var weekDatesArray = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-    var theCalendarNode = document.getElementById('the_calendar');
+    theCalendarNode = document.getElementById('the_calendar');
     theCalendarNode.className = 'wholeCalendar';
 
-    var monthChooser = document.createElement('div');
+    monthChooser = document.createElement('div');
 
-    var curDate = new Date(Date.now());
-    var curMonth = curDate.getMonth();
-    var curYear = curDate.getFullYear();
-    var monthYear = document.createElement('div');
-    var calendarDaysTable = document.createElement('div');
+    curDate = new Date(Date.now());
+    curMonth = curDate.getMonth();
+    curYear = curDate.getFullYear();
+    monthYear = document.createElement('div');
+    calendarDaysTable = document.createElement('div');
+    taskManager = document.getElementById('task_manager');
+
+    window.addEventListener('click', bodyClick);
+
 
     addSwipes();
 
     initMonthYear();
     initMonthList();
-
-    theCalendarNode.appendChild(calendarDaysTable);
-
+    initTaskManager();
     initWeekDates();
+    theCalendarNode.appendChild(calendarDaysTable);
+    datesField = calendarDaysTable.appendChild(document.createElement('div'));
+    taskStored = [];
 
-    var datesField = calendarDaysTable.appendChild(document.createElement('div'));
+
     drawThisMonth();
 
     function drawThisMonth() {
@@ -66,6 +68,8 @@ window.onload = function () {
 
                 drawnDay.classList.add('mainPart');
                 drawnDay.classList.add('date');
+                drawnDay.setAttribute("day",drawnDayDate);
+                drawnDay.onclick = showTaskKeeper;
                 drawnDayDate++;
                 drawnWeek.appendChild(drawnDay);
             }
@@ -121,6 +125,7 @@ window.onload = function () {
         monthChooser.className = 'unhiddenField';
 
         calendarDaysTable.className = 'hiddenField';
+        resetMonthYear();
     }
 
     function hideMonthList() {
@@ -156,31 +161,26 @@ window.onload = function () {
     function addSwipes() {
         var placeHolder = document.createElement('div');
         placeHolder.className = 'swipeLeft';
-        placeHolder.onclick = monthBack;
+        placeHolder.onclick = monthForwardBack;
         theCalendarNode.appendChild(placeHolder);
 
         placeHolder = document.createElement('div');
         placeHolder.className = 'swipeRight';
-        placeHolder.onclick = monthForward;
+        placeHolder.onclick = monthForwardBack;
         theCalendarNode.appendChild(placeHolder);
     }
 
-    function monthForward() {
-        if (calendarDaysTable.className == 'hiddenField') {
-            curDate.setFullYear(curDate.getFullYear() + 1);
-        } else {
-            curDate.setMonth(curDate.getMonth() + 1);
+    function monthForwardBack(elem) {
+        var shift;
+        if (elem.target.className === "swipeRight"){
+            shift = 1;
+        }else{
+            shift = -1;
         }
-        resetMonthYear();
-        clearMonth();
-        drawThisMonth();
-    }
-
-    function monthBack() {
         if (calendarDaysTable.className == 'hiddenField') {
-            curDate.setFullYear(curDate.getFullYear() - 1);
+            curDate.setFullYear(curDate.getFullYear() + shift);
         } else {
-            curDate.setMonth(curDate.getMonth() - 1);
+            curDate.setMonth(curDate.getMonth() + shift);
         }
         resetMonthYear();
         clearMonth();
@@ -190,6 +190,73 @@ window.onload = function () {
     function clearMonth() {
         while (datesField.hasChildNodes()) {
             datesField.removeChild(datesField.firstChild);
+        }
+    }
+
+    function bodyClick(elem) {
+        console.log(elem.target.getAttribute('day'));
+        if (!(elem.target.hasAttribute('day'))
+            &&(!elem.target.parentNode.hasAttribute('day'))
+            &&(taskManager.className === 'taskManager')){
+            hideTaskManager();
+        }
+    }
+
+    function initTaskManager(){
+        taskManager.className = 'hiddenField';
+        var tempDiv = document.createElement('div');
+        tempDiv.appendChild(document.createTextNode('ToDo list:'));
+        taskManager.appendChild(tempDiv);
+
+        taskList = document.createElement('ol');
+        taskManager.appendChild(taskList);
+
+        taskText = document.createElement('input');
+        taskManager.appendChild(taskText);
+
+        taskButton = document.createElement('button');
+        taskButton.appendChild(document.createTextNode('Add Task'));
+        taskButton.style.flow = 'right';
+        taskButton.onclick = addTaskToStore;
+        taskManager.appendChild(taskButton);
+    }
+
+    function showTaskKeeper(elem) {
+        console.log(elem);
+        taskManager.className = 'taskManager';
+        taskManager.style.left = (elem.target.offsetLeft + elem.target.offsetWidth) + 'px';
+        taskManager.style.top = elem.target.offsetTop + 'px';
+        taskManager.setAttribute('day',elem.target.innerHTML);
+        loadDaysTasks();
+    }
+
+    function hideTaskManager(){
+        taskManager.className = 'hiddenField';
+    }
+
+    function addTaskToStore() {
+        var task = [];
+        task.push(taskText.value);
+        task.push(curYear);
+        task.push(curMonth);
+        task.push(taskManager.getAttribute('day'));
+        console.log(task);
+        taskStored.push(task);
+        taskButton.value = '';
+    }
+
+    function loadDaysTasks() {
+        while (taskList.firstChild) {
+            taskList.removeChild(taskList.firstChild);
+        }
+        for (var i = 0; i < taskStored.length; i++){
+            if ((taskStored[i][1] == curYear)&&
+                (taskStored[i][2] == curMonth)&&
+                (taskStored[i][3] == taskManager.getAttribute('day'))){
+                var tempDiv = document.createElement('li');
+                tempDiv.appendChild(document.createTextNode(taskStored[i][0]));
+                taskList.appendChild(tempDiv);
+            }
         }
     }
 };

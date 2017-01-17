@@ -69,6 +69,7 @@
 }
 .thisMonth{
     color: #000000;
+    cursor: pointer;
 }
 .thisMonthHoliday{
     border-right-style: none;
@@ -83,7 +84,6 @@
 }
 .unhiddenField{
     width: 776px;
-    height: 100px;
     border: 3px #101010 solid;
     top: 125px;
     display: block;
@@ -91,6 +91,8 @@
 
 }
 .monthChoosing{
+    height: 112px;
+    line-height: 112px;
     text-align: center;
     display: inline-block;
     color: #000;
@@ -98,4 +100,13 @@
     width: 180px;
     padding: 3px;
     cursor: pointer;
+}
+.taskManager{
+    display: block;
+    position: absolute;
+    padding: 5px 3px;
+    width: 200px;
+    background-color: #fbfbfb;
+    border: 1px solid #d1d1d1;
+    border-radius: 4px;
 }
