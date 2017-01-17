@@ -37,6 +37,12 @@
     height: 120px;
     line-height: 120px;
 }
+.monthYearText{
+    height: 50px;
+    width: 400px;
+    cursor: pointer;
+    margin:auto;
+}
 .mainPart{
     border-style: solid;
     border-color: #dfe3e6;
@@ -71,4 +77,25 @@
 .enotherMonthHoliday{
     border-right-style: none;
     color: #cecece;
+}
+.hiddenField{
+    display: none;
+}
+.unhiddenField{
+    width: 776px;
+    height: 100px;
+    border: 3px #101010 solid;
+    top: 125px;
+    display: block;
+    padding: 15px;
+
+}
+.monthChoosing{
+    text-align: center;
+    display: inline-block;
+    color: #000;
+    border: 3px #eee solid;
+    width: 180px;
+    padding: 3px;
+    cursor: pointer;
 }

@@ -10,22 +10,28 @@ window.onload = function () {
     var theCalendarNode = document.getElementById('the_calendar');
     theCalendarNode.className = 'wholeCalendar';
 
+    var monthChooser = document.createElement('div');
+
     var curDate = new Date(Date.now());
     var curMonth = curDate.getMonth();
     var curYear = curDate.getFullYear();
+    var monthYear = document.createElement('div');
+    var calendarDaysTable = document.createElement('div');
 
     addSwipes();
 
-    var monthYear = document.createElement('div');
     initMonthYear();
+    initMonthList();
+
+    theCalendarNode.appendChild(calendarDaysTable);
 
     initWeekDates();
 
-    var datesField = theCalendarNode.appendChild(document.createElement('div'));
+    var datesField = calendarDaysTable.appendChild(document.createElement('div'));
     drawThisMonth();
 
-    function drawThisMonth(){
-        var tempDate = new Date(curYear,curMonth,1);
+    function drawThisMonth() {
+        var tempDate = new Date(curYear, curMonth, 1);
         var drawnDayDate = -((tempDate.getDay() + 6) % 7);
         console.log(drawnDayDate);
 
@@ -44,7 +50,7 @@ window.onload = function () {
                 if (drawnDayDate < 0) {
                     drawnDay.appendChild(document.createTextNode(prevMaxDate + drawnDayDate + 1 + ''));
                     drawnDay.className = 'enotherMonth';
-                } else if ((drawnDayDate >= thisMaxDate)&&(j === 6)) {
+                } else if ((drawnDayDate >= thisMaxDate) && (j === 6)) {
                     drawnDay.appendChild(document.createTextNode(drawnDayDate - thisMaxDate + 1 + ''));
                     drawnDay.className = 'enotherMonthHoliday';
                 } else if (drawnDayDate >= thisMaxDate) {
@@ -63,37 +69,89 @@ window.onload = function () {
                 drawnDayDate++;
                 drawnWeek.appendChild(drawnDay);
             }
-            if (drawnDayDate > thisMaxDate) {
+            if (drawnDayDate >= thisMaxDate) {
                 break;
             }
         }
     }
 
     function initWeekDates() {
-       for (var i=0; i<weekDatesArray.length; i++) {
-           var weekElem = document.createElement('div');
-           weekElem.appendChild(document.createTextNode(weekDatesArray[i]));
-           weekElem.className = 'weekDate';
-           weekElem.classList.add('mainPart');
-           theCalendarNode.appendChild(weekElem);
-       }
-       weekElem.classList.add('thisMonthHoliday')
+        for (var i = 0; i < weekDatesArray.length; i++) {
+            var weekElem = document.createElement('div');
+            weekElem.appendChild(document.createTextNode(weekDatesArray[i]));
+            weekElem.className = 'weekDate';
+            weekElem.classList.add('mainPart');
+            calendarDaysTable.appendChild(weekElem);
+        }
+        weekElem.classList.add('thisMonthHoliday')
     }
 
-    function resetMonthYear(){
+    function resetMonthYear() {
         curMonth = curDate.getMonth();
         curYear = curDate.getFullYear();
+        drawThisMonth();
         monthYear.removeChild(monthYear.firstChild);
-        monthYear.appendChild(document.createTextNode(monthNamesArray[curDate.getMonth()]
-            + ' ' + curDate.getFullYear()));
-    };
+        setMonthYear();
+    }
 
     function initMonthYear() {
-        monthYear.appendChild(document.createTextNode(monthNamesArray[curDate.getMonth()]
-            + ' ' + curDate.getFullYear()));
-        monthYear.className = 'monthYear';
+        setMonthYear();
+
         theCalendarNode.appendChild(monthYear);
-    };
+    }
+
+    function setMonthYear() {
+        var monthYearText = document.createElement('div');
+        if (calendarDaysTable.className == 'hiddenField') {
+            monthYearText.appendChild(document.createTextNode('' + curDate.getFullYear()));
+        } else {
+            monthYearText.appendChild(document.createTextNode(monthNamesArray[curDate.getMonth()]
+                + ' ' + curDate.getFullYear()));
+        }
+        monthYearText.className = 'monthYearText';
+        monthYearText.onclick = showMonthList;
+
+        monthYear.appendChild(monthYearText);
+        monthYear.className = 'monthYear';
+    }
+
+    // MONTH LIST
+
+    function showMonthList() {
+        monthChooser.className = 'unhiddenField';
+
+        calendarDaysTable.className = 'hiddenField';
+    }
+
+    function hideMonthList() {
+        monthChooser.className = 'hiddenField';
+
+        calendarDaysTable.className = '';
+    }
+
+    function initMonthList() {
+        theCalendarNode.appendChild(monthChooser);
+        monthChooser.className = 'hiddenField';
+        for (var i = 0; i < monthNamesArray.length; i++) {
+            var monthElem = document.createElement('div');
+            monthElem.appendChild(document.createTextNode(monthNamesArray[i]));
+            monthElem.className = 'monthChoosing';
+            monthElem.onclick = monthChosen;
+            monthChooser.appendChild(monthElem);
+        }
+    }
+
+    function monthChosen(elem) {
+        console.log(elem.target.innerHTML);
+        var monthNum = monthNamesArray.indexOf(elem.target.innerHTML);
+        curDate.setMonth(monthNum);
+        hideMonthList();
+        resetMonthYear();
+        clearMonth();
+        drawThisMonth();
+    }
+
+    //END MONTH LIST
 
     function addSwipes() {
         var placeHolder = document.createElement('div');
@@ -105,29 +163,33 @@ window.onload = function () {
         placeHolder.className = 'swipeRight';
         placeHolder.onclick = monthForward;
         theCalendarNode.appendChild(placeHolder);
-    };
+    }
 
     function monthForward() {
-        curDate.setMonth(curDate.getMonth() + 1);
-        var curMonth = curDate.getMonth();
-        var curYear = curDate.getFullYear();
-        clearMonth();
+        if (calendarDaysTable.className == 'hiddenField') {
+            curDate.setFullYear(curDate.getFullYear() + 1);
+        } else {
+            curDate.setMonth(curDate.getMonth() + 1);
+        }
         resetMonthYear();
+        clearMonth();
         drawThisMonth();
-    };
+    }
 
     function monthBack() {
-        curDate.setMonth(curDate.getMonth() - 1);
-        var curMonth = curDate.getMonth();
-        var curYear = curDate.getFullYear();
-        clearMonth();
+        if (calendarDaysTable.className == 'hiddenField') {
+            curDate.setFullYear(curDate.getFullYear() - 1);
+        } else {
+            curDate.setMonth(curDate.getMonth() - 1);
+        }
         resetMonthYear();
+        clearMonth();
         drawThisMonth();
-    };
+    }
 
-    function clearMonth(){
-        while(datesField.hasChildNodes()){
+    function clearMonth() {
+        while (datesField.hasChildNodes()) {
             datesField.removeChild(datesField.firstChild);
         }
     }
-}
+};
