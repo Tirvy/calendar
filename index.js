@@ -29,10 +29,12 @@ window.onload = function () {
         var drawnDayDate = -((tempDate.getDay() + 6) % 7);
         console.log(drawnDayDate);
 
+        tempDate.setMonth(curMonth + 1);
         tempDate.setDate(0);
         var thisMaxDate = tempDate.getDate();
 
-        tempDate.setMonth(curMonth - 1);
+        tempDate.setMonth(curMonth);
+        tempDate.setDate(0);
         var prevMaxDate = tempDate.getDate();
 
         for (var i = 0; i < 6; i++) {
@@ -79,7 +81,9 @@ window.onload = function () {
     }
 
     function resetMonthYear(){
-        monthYear.removeChild();
+        curMonth = curDate.getMonth();
+        curYear = curDate.getFullYear();
+        monthYear.removeChild(monthYear.firstChild);
         monthYear.appendChild(document.createTextNode(monthNamesArray[curDate.getMonth()]
             + ' ' + curDate.getFullYear()));
     };
@@ -93,15 +97,37 @@ window.onload = function () {
 
     function addSwipes() {
         var placeHolder = document.createElement('div');
-        placeHolder.appendChild(document.createTextNode('<'));
-        //placeHolder.value = '<';
         placeHolder.className = 'swipeLeft';
+        placeHolder.onclick = monthBack;
         theCalendarNode.appendChild(placeHolder);
 
         placeHolder = document.createElement('div');
-        placeHolder.appendChild(document.createTextNode('>'));
-        //placeHolder.value = '>';
         placeHolder.className = 'swipeRight';
+        placeHolder.onclick = monthForward;
         theCalendarNode.appendChild(placeHolder);
     };
+
+    function monthForward() {
+        curDate.setMonth(curDate.getMonth() + 1);
+        var curMonth = curDate.getMonth();
+        var curYear = curDate.getFullYear();
+        clearMonth();
+        resetMonthYear();
+        drawThisMonth();
+    };
+
+    function monthBack() {
+        curDate.setMonth(curDate.getMonth() - 1);
+        var curMonth = curDate.getMonth();
+        var curYear = curDate.getFullYear();
+        clearMonth();
+        resetMonthYear();
+        drawThisMonth();
+    };
+
+    function clearMonth(){
+        while(datesField.hasChildNodes()){
+            datesField.removeChild(datesField.firstChild);
+        }
+    }
 }
