@@ -1,0 +1,44 @@
+.swipeRight{
+    float: right;
+}
+.swipeLeft{
+    float: left;
+}
+.monthYear{
+    margin-left: 25%;
+    margin-right: 25%;
+    display: block;
+    text-align: center;
+    color: #fefaf9;
+    background-color: #58c7da;
+    font-size: 40px;
+    font-family: Arial
+}
+.mainPart{
+    border-style: groove;
+    border-color: #dfe3e6;
+    font-size: 36px;
+    padding: 20px;
+    font-family: Arial;
+    border-width: 5px 5px 5px 0px;
+    width: 118px;
+    text-align: center;
+    display: inline-block;
+}
+.weekDate{
+    text-align: center;
+    color: #5f5f5d;
+    background-color: #eeeff3;
+}
+.date{
+}
+.enotherMonth{
+    color: #cecece;/*#676767;*/
+}
+.thisMonth{
+    color: #000000;
+}
+.thisMonthHoliday{
+    color: #58cce5;
+    border-width: 5px 0px 5px 5px;
+}
