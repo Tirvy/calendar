@@ -1,3 +1,7 @@
+.wholeCalendar{
+    width: 814px;
+    margin: auto;
+}
 .swipeRight{
     float: right;
 }
@@ -5,27 +9,31 @@
     float: left;
 }
 .monthYear{
-    margin-left: 25%;
-    margin-right: 25%;
     display: block;
     text-align: center;
     color: #fefaf9;
     background-color: #58c7da;
     font-size: 40px;
-    font-family: Arial
+    border-bottom-width: 5px;
+    border-color: inherit;
+    border-style: solid;
 }
 .mainPart{
-    border-style: groove;
+    border-style: solid;
     border-color: #dfe3e6;
     font-size: 36px;
-    padding: 20px;
+    width: 112px;
+    height: 112px;
+    line-height: 112px;
     font-family: Arial;
-    border-width: 5px 5px 5px 0px;
-    width: 118px;
+    border-width: 0px 5px 5px 0px;
     text-align: center;
     display: inline-block;
 }
 .weekDate{
+    height: 70px;
+    line-height: 70px;
+    border-top-width: 5px;
     text-align: center;
     color: #5f5f5d;
     background-color: #eeeff3;
@@ -39,6 +47,10 @@
     color: #000000;
 }
 .thisMonthHoliday{
+    border-right-style: none;
     color: #58cce5;
-    border-width: 5px 0px 5px 5px;
+}
+.enotherMonthHoliday{
+    border-right-style: none;
+    color: #cecece;
 }

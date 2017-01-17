@@ -8,6 +8,7 @@ window.onload = function () {
     var weekDatesArray = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     var theCalendarNode = document.getElementById('the_calendar');
+    theCalendarNode.className = 'wholeCalendar';
 
     var curDate = new Date(Date.now());
     var curMonth = curDate.getMonth();
@@ -24,30 +25,44 @@ window.onload = function () {
     drawThisMonth();
 
     function drawThisMonth(){
-        var monthStart = new Date(curYear,curMonth + 1,1);
-        var drawnDayDate = monthStart.getDay() - 6;
+        var tempDate = new Date(curYear,curMonth,1);
+        var drawnDayDate = -((tempDate.getDay() + 6) % 7);
         console.log(drawnDayDate);
-        if (drawnDayDate === -6){
-            drawnDayDate = 0;
-        }
 
-        for (var i = 0; i < 6; i++){
+        tempDate.setDate(0);
+        var thisMaxDate = tempDate.getDate();
+
+        tempDate.setMonth(curMonth - 1);
+        var prevMaxDate = tempDate.getDate();
+
+        for (var i = 0; i < 6; i++) {
             var drawnWeek = datesField.appendChild(document.createElement('div'));
-            //drawnWeek.className = 'mainPart';
-            for (var j = 0; j < 7; j++){
+            for (var j = 0; j < 7; j++) {
                 var drawnDay = document.createElement('div');
-                drawnDay.appendChild(document.createTextNode(drawnDayDate + ''));
                 if (drawnDayDate < 0) {
+                    drawnDay.appendChild(document.createTextNode(prevMaxDate + drawnDayDate + 1 + ''));
                     drawnDay.className = 'enotherMonth';
-                }else if (j === 6) {
+                } else if ((drawnDayDate >= thisMaxDate)&&(j === 6)) {
+                    drawnDay.appendChild(document.createTextNode(drawnDayDate - thisMaxDate + 1 + ''));
+                    drawnDay.className = 'enotherMonthHoliday';
+                } else if (drawnDayDate >= thisMaxDate) {
+                    drawnDay.appendChild(document.createTextNode(drawnDayDate - thisMaxDate + 1 + ''));
+                    drawnDay.className = 'enotherMonth';
+                } else if (j === 6) {
+                    drawnDay.appendChild(document.createTextNode(drawnDayDate + 1 + ''));
                     drawnDay.className = 'thisMonthHoliday';
-                }else{
+                } else {
+                    drawnDay.appendChild(document.createTextNode(drawnDayDate + 1 + ''));
                     drawnDay.className = 'thisMonth';
                 }
+
                 drawnDay.classList.add('mainPart');
                 drawnDay.classList.add('date');
                 drawnDayDate++;
                 drawnWeek.appendChild(drawnDay);
+            }
+            if (drawnDayDate > thisMaxDate) {
+                break;
             }
         }
     }
