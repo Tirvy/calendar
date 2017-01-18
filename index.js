@@ -66,13 +66,16 @@ window.onload = function () {
                         drawnDay.appendChild(document.createTextNode(drawnDayDate + 1 + ''));
                         drawnDay.className = 'thisMonth';
                     }
+
                     drawnDay.onclick = showTaskKeeper;
-                    var taskNumber = document.createElement('div');
-                    taskNumber.className = 'tasksNumber';
-                    console.log(countDaysTasks(curYear,curMonth,drawnDayDate));
-                    taskNumber.appendChild(document.createTextNode('' + countDaysTasks(curYear,curMonth,drawnDayDate)));
-                    drawnDay.appendChild(taskNumber);
                     drawnDay.setAttribute("day",drawnDayDate);
+
+                    if (countDaysTasks(curYear,curMonth,drawnDayDate) > 0){
+                        var taskNumber = document.createElement('div');
+                        taskNumber.className = 'tasksNumber';
+                        taskNumber.appendChild(document.createTextNode('' + countDaysTasks(curYear,curMonth,drawnDayDate)));
+                        drawnDay.appendChild(taskNumber);
+                    }
                 }
 
                 drawnDay.classList.add('mainPart');
@@ -155,6 +158,10 @@ window.onload = function () {
             monthElem.setAttribute('monthNumber', i)
             monthChooser.appendChild(monthElem);
 
+
+            if (countDaysTasks(curYear,i) === 0){
+                continue;
+            }
             var taskNumber = document.createElement('div');
             taskNumber.className = 'tasksNumber';
             taskNumber.appendChild(document.createTextNode('' + countDaysTasks(curYear,i)));
@@ -210,7 +217,7 @@ window.onload = function () {
 
     function bodyClick(elem) {
         if (!(elem.target.hasAttribute('day'))
-            &&((!elem.parentNode)||(!elem.target.parentNode.hasAttribute('day')))
+            &&((!elem.target.parentNode)||(!elem.target.parentNode.hasAttribute('day')))
             &&(taskManager.className.indexOf('taskManager') >= 0)){
             hideTaskManager();
         }
