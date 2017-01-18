@@ -8,13 +8,13 @@ window.onload = function () {
     theCalendarNode.className = 'wholeCalendar';
 
     monthChooser = document.createElement('div');
-
     curDate = new Date(Date.now());
     curMonth = curDate.getMonth();
     curYear = curDate.getFullYear();
     monthYear = document.createElement('div');
     calendarDaysTable = document.createElement('div');
     taskManager = document.getElementById('task_manager');
+    taskStored = [];
 
     window.addEventListener('click', bodyClick);
 
@@ -27,7 +27,6 @@ window.onload = function () {
     initWeekDates();
     theCalendarNode.appendChild(calendarDaysTable);
     datesField = calendarDaysTable.appendChild(document.createElement('div'));
-    taskStored = [];
 
 
     drawThisMonth();
@@ -143,6 +142,9 @@ window.onload = function () {
     }
 
     function initMonthList() {
+        while (monthChooser.firstChild) {
+            monthChooser.removeChild(monthChooser.firstChild);
+        }
         theCalendarNode.appendChild(monthChooser);
         monthChooser.className = 'hiddenField';
         for (var i = 0; i < monthNamesArray.length; i++) {
@@ -150,12 +152,18 @@ window.onload = function () {
             monthElem.appendChild(document.createTextNode(monthNamesArray[i]));
             monthElem.className = 'monthChoosing';
             monthElem.onclick = monthChosen;
+            monthElem.setAttribute('monthNumber', i)
             monthChooser.appendChild(monthElem);
+
+            var taskNumber = document.createElement('div');
+            taskNumber.className = 'tasksNumber';
+            taskNumber.appendChild(document.createTextNode('' + countDaysTasks(curYear,i)));
+            monthElem.appendChild(taskNumber);
         }
     }
 
     function monthChosen(elem) {
-        var monthNum = monthNamesArray.indexOf(elem.target.innerHTML);
+        var monthNum = elem.target.getAttribute('monthNumber');
         curDate.setMonth(monthNum);
         hideMonthList();
         resetMonthYear();
@@ -202,7 +210,7 @@ window.onload = function () {
 
     function bodyClick(elem) {
         if (!(elem.target.hasAttribute('day'))
-            &&(!elem.target.parentNode.hasAttribute('day'))
+            &&((!elem.parentNode)||(!elem.target.parentNode.hasAttribute('day')))
             &&(taskManager.className.indexOf('taskManager') >= 0)){
             hideTaskManager();
         }
@@ -259,6 +267,7 @@ window.onload = function () {
         loadDaysTasks();
         clearMonth();
         drawThisMonth();
+        initMonthList();
     }
 
     function loadDaysTasks() {
