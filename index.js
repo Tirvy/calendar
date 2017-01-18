@@ -35,7 +35,6 @@ window.onload = function () {
     function drawThisMonth() {
         var tempDate = new Date(curYear, curMonth, 1);
         var drawnDayDate = -((tempDate.getDay() + 6) % 7);
-        console.log(drawnDayDate);
 
         tempDate.setMonth(curMonth + 1);
         tempDate.setDate(0);
@@ -58,18 +57,27 @@ window.onload = function () {
                 } else if (drawnDayDate >= thisMaxDate) {
                     drawnDay.appendChild(document.createTextNode(drawnDayDate - thisMaxDate + 1 + ''));
                     drawnDay.className = 'enotherMonth';
-                } else if (j === 6) {
-                    drawnDay.appendChild(document.createTextNode(drawnDayDate + 1 + ''));
-                    drawnDay.className = 'thisMonthHoliday';
-                } else {
-                    drawnDay.appendChild(document.createTextNode(drawnDayDate + 1 + ''));
-                    drawnDay.className = 'thisMonth';
+                } else{
+                    if (j === 6) {
+                        drawnDay.appendChild(document.createTextNode(drawnDayDate + 1 + ''));
+                        drawnDay.className = 'thisMonthHoliday';
+                        drawnDay.classList.add('thisMonth');
+
+                    } else {
+                        drawnDay.appendChild(document.createTextNode(drawnDayDate + 1 + ''));
+                        drawnDay.className = 'thisMonth';
+                    }
+                    drawnDay.onclick = showTaskKeeper;
+                    var taskNumber = document.createElement('div');
+                    taskNumber.className = 'tasksNumber';
+                    console.log(countDaysTasks(curYear,curMonth,drawnDayDate));
+                    taskNumber.appendChild(document.createTextNode('' + countDaysTasks(curYear,curMonth,drawnDayDate)));
+                    drawnDay.appendChild(taskNumber);
+                    drawnDay.setAttribute("day",drawnDayDate);
                 }
 
                 drawnDay.classList.add('mainPart');
                 drawnDay.classList.add('date');
-                drawnDay.setAttribute("day",drawnDayDate);
-                drawnDay.onclick = showTaskKeeper;
                 drawnDayDate++;
                 drawnWeek.appendChild(drawnDay);
             }
@@ -147,7 +155,6 @@ window.onload = function () {
     }
 
     function monthChosen(elem) {
-        console.log(elem.target.innerHTML);
         var monthNum = monthNamesArray.indexOf(elem.target.innerHTML);
         curDate.setMonth(monthNum);
         hideMonthList();
@@ -194,10 +201,9 @@ window.onload = function () {
     }
 
     function bodyClick(elem) {
-        console.log(elem.target.getAttribute('day'));
         if (!(elem.target.hasAttribute('day'))
             &&(!elem.target.parentNode.hasAttribute('day'))
-            &&(taskManager.className === 'taskManager')){
+            &&(taskManager.className.indexOf('taskManager') >= 0)){
             hideTaskManager();
         }
     }
@@ -209,6 +215,7 @@ window.onload = function () {
         taskManager.appendChild(tempDiv);
 
         taskList = document.createElement('ol');
+        taskList.className = 'taskList';
         taskManager.appendChild(taskList);
 
         taskText = document.createElement('input');
@@ -222,11 +229,17 @@ window.onload = function () {
     }
 
     function showTaskKeeper(elem) {
-        console.log(elem);
         taskManager.className = 'taskManager';
-        taskManager.style.left = (elem.target.offsetLeft + elem.target.offsetWidth) + 'px';
+        if (elem.target.offsetLeft + elem.target.offsetWidth + taskManager.offsetWidth <
+            theCalendarNode.offsetLeft + theCalendarNode.offsetWidth) {
+            taskManager.style.left = (elem.target.offsetLeft + elem.target.offsetWidth) + 'px';
+            taskManager.classList.add('taskManagerL');
+        }else{
+            taskManager.style.left = (elem.target.offsetLeft - taskManager.offsetWidth) + 'px';
+            taskManager.classList.add('taskManagerR');
+        }
         taskManager.style.top = elem.target.offsetTop + 'px';
-        taskManager.setAttribute('day',elem.target.innerHTML);
+        taskManager.setAttribute('day',elem.target.getAttribute('day'));
         loadDaysTasks();
     }
 
@@ -240,9 +253,12 @@ window.onload = function () {
         task.push(curYear);
         task.push(curMonth);
         task.push(taskManager.getAttribute('day'));
-        console.log(task);
+
         taskStored.push(task);
-        taskButton.value = '';
+        taskText.value = '';
+        loadDaysTasks();
+        clearMonth();
+        drawThisMonth();
     }
 
     function loadDaysTasks() {
@@ -258,5 +274,26 @@ window.onload = function () {
                 taskList.appendChild(tempDiv);
             }
         }
+    }
+
+    function countDaysTasks(year,month,day) {
+        var result = 0;
+        if (day >= 0) {
+            for (var i = 0; i < taskStored.length; i++) {
+                if ((taskStored[i][1] == year) &&
+                    (taskStored[i][2] == month) &&
+                    (taskStored[i][3] == day)) {
+                    result ++;
+                }
+            }
+        }else{
+            for (var i = 0; i < taskStored.length; i++) {
+                if ((taskStored[i][1] == year) &&
+                    (taskStored[i][2] == month)) {
+                    result ++;
+                }
+            }
+        }
+        return result;
     }
 };
